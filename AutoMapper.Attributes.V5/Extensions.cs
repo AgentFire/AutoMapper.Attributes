@@ -7,7 +7,9 @@ using System.Reflection;
 
 namespace AutoMapper.Attributes
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static class Extensions
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
         /// <summary>
         /// Maps all types with the MapsTo/MapsFrom attributes to the type specified in MapTo/MapFrom.
@@ -21,8 +23,8 @@ namespace AutoMapper.Attributes
                 assemblyTypes.Select(t => new
                 {
                     Type = t,
-                    MapsToAttributes = t.GetCustomAttributes(typeof(MapsToAttribute), true).Cast<MapsToAttribute>(),
-                    MapsFromAttributes = t.GetCustomAttributes(typeof(MapsFromAttribute), true).Cast<MapsFromAttribute>(),
+                    MapsToAttributes = t.GetCustomAttributes(typeof(MapsToAttribute), false).Cast<MapsToAttribute>(),
+                    MapsFromAttributes = t.GetCustomAttributes(typeof(MapsFromAttribute), false).Cast<MapsFromAttribute>(),
                 })
                 .Where(t => t.MapsToAttributes.Any() || t.MapsFromAttributes.Any());
             

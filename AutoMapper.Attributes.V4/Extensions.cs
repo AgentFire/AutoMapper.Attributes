@@ -1,11 +1,11 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 
 namespace AutoMapper.Attributes
 {
@@ -17,9 +17,9 @@ namespace AutoMapper.Attributes
         static Extensions()
         {
             GenericCreateMapStaticApi =
-                typeof (Mapper).GetMethods()
-                    .Single(m => m.Name == nameof(Mapper.CreateMap) && 
-                                 m.IsGenericMethodDefinition && 
+                typeof(Mapper).GetMethods()
+                    .Single(m => m.Name == nameof(Mapper.CreateMap) &&
+                                 m.IsGenericMethodDefinition &&
                                  m.GetGenericArguments().Length == 2 &&
                                  !m.GetParameters().Any());
 
@@ -34,15 +34,6 @@ namespace AutoMapper.Attributes
         private static MethodInfo GenericCreateMapStaticApi { get; }
         private static MethodInfo GenericCreateMap { get; }
 
-        /// <summary>
-        /// Maps all types with the MapsTo/MapsFrom attributes to the type specified in MapTo/MapFrom.
-        /// </summary>
-        /// <param name="assembly">The assembly to search for types.</param>
-        public static void MapTypes(this Assembly assembly)
-        {
-            MapTypes(assembly, null);
-        }
-
 
         /// <summary>
         /// Maps all types with the MapsTo/MapsFrom attributes to the type specified in MapTo/MapFrom.
@@ -51,13 +42,18 @@ namespace AutoMapper.Attributes
         /// <param name="mapperConfiguration">The mapper configuration.</param>
         public static void MapTypes(this Assembly assembly, IMapperConfiguration mapperConfiguration)
         {
+            if (mapperConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(mapperConfiguration));
+            }
+
             var types = assembly.GetTypes();
             var mappedTypes = types
                 .Select(t => new
                 {
                     Type = t,
-                    MapsToAttributes = t.GetCustomAttributes(typeof (MapsToAttribute), true).Cast<MapsToAttribute>(),
-                    MapsFromAttributes = t.GetCustomAttributes(typeof (MapsFromAttribute), true).Cast<MapsFromAttribute>()
+                    MapsToAttributes = t.GetCustomAttributes(typeof(MapsToAttribute), true).Cast<MapsToAttribute>(),
+                    MapsFromAttributes = t.GetCustomAttributes(typeof(MapsFromAttribute), true).Cast<MapsFromAttribute>()
                 })
                 .Where(t => t.MapsToAttributes.Any() || t.MapsFromAttributes.Any());
 
@@ -110,7 +106,9 @@ namespace AutoMapper.Attributes
         private static void AddToDictionary(Dictionary<Type, HashSet<Type>> dict, Type sourceType, Type destinationType)
         {
             if (!dict.ContainsKey(sourceType))
+            {
                 dict[sourceType] = new HashSet<Type>();
+            }
 
             dict[sourceType].Add(destinationType);
         }
@@ -131,11 +129,13 @@ namespace AutoMapper.Attributes
             foreach (var t in typesWithMapToProperties)
             {
                 var destinationType = t.Type;
+
                 foreach (var p in t.MapFromProperties)
                 {
                     foreach (var mapToAttribute in p.MapFromAttributes)
                     {
                         var propMapInfo = mapToAttribute.GetPropertyMapInfo(p.Property);
+
                         if (propMapInfo.DestinationType.IsAssignableFrom(destinationType))
                         {
                             propMapInfo.DestinationType = destinationType;
@@ -162,11 +162,13 @@ namespace AutoMapper.Attributes
             foreach (var t in typesWithMapToProperties)
             {
                 var sourceType = t.Type;
+
                 foreach (var p in t.MapToProperties)
                 {
                     foreach (var mapToAttribute in p.MapToAttributes)
                     {
                         var propMapInfo = mapToAttribute.GetPropertyMapInfo(p.Property);
+
                         foreach (var destinationType in sourceAndDestinationTypes[sourceType])
                         {
                             if (sourceType.IsAssignableFrom(propMapInfo.SourceType))
@@ -188,21 +190,15 @@ namespace AutoMapper.Attributes
             var destinationPropertyInfo = propMapInfo.DestinationPropertyInfo;
 
             var createMapMethod = mapperConfiguration == null ? GenericCreateMapStaticApi.MakeGenericMethod(sourceType, destinationType) : GenericCreateMap.MakeGenericMethod(sourceType, destinationType);
-            var mapObject = createMapMethod.Invoke(mapperConfiguration ?? null, new object[] {});
+            var mapObject = createMapMethod.Invoke(mapperConfiguration ?? null, new object[] { });
             var mapObjectExpression = Expression.Constant(mapObject);
 
             var sourceParameter = Expression.Parameter(sourceType);
             var destinationParameter = Expression.Parameter(destinationType);
 
-            var destinationMember = Expression.Lambda(
-                Expression.Convert(
-                    Expression.Property(destinationParameter, destinationPropertyInfo),
-                    typeof (object)
-                ),
-                destinationParameter
-            );
+            var destinationMember = Expression.Lambda(Expression.Convert(Expression.Property(destinationParameter, destinationPropertyInfo), typeof(object)), destinationParameter);
 
-            var memberConfigType = typeof (IMemberConfigurationExpression<>).MakeGenericType(sourceType);
+            var memberConfigType = typeof(IMemberConfigurationExpression<>).MakeGenericType(sourceType);
             var memberConfigTypeParameter = Expression.Parameter(memberConfigType);
 
             var finalPropertyType = sourceProperty.Last().PropertyType;
@@ -210,12 +206,12 @@ namespace AutoMapper.Attributes
 
             var memberOptions = Expression.Call(memberConfigTypeParameter,
                 nameof(IMemberConfigurationExpression<object>.MapFrom),
-                new Type[] {finalPropertyType},
+                new Type[] { finalPropertyType },
                 Expression.Lambda(
                     propertyExpression,
                     sourceParameter
                     ));
-            
+
             var forMemberMethod = Expression.Call(mapObjectExpression,
                 nameof(IMappingExpression.ForMember),
                 Type.EmptyTypes,
@@ -234,22 +230,19 @@ namespace AutoMapper.Attributes
 
             if (configureMappingGenericMethod == null)
             {
-                var map = mapperConfiguration == null ? Mapper.CreateMap(sourceType, destinationType) : mapperConfiguration.CreateMap(sourceType, destinationType);
+                var map = mapperConfiguration.CreateMap(sourceType, destinationType);
                 mapsToAttribute.ConfigureMapping(map);
             }
             else
             {
                 var createMapMethod = mapperConfiguration == null ? GenericCreateMapStaticApi.MakeGenericMethod(sourceType, destinationType) : GenericCreateMap.MakeGenericMethod(sourceType, destinationType);
-                var map = createMapMethod.Invoke(mapperConfiguration ?? null, new object[] {});
-                configureMappingGenericMethod.Invoke(mapsToAttribute, new[] {map});
+                var map = createMapMethod.Invoke(mapperConfiguration ?? null, new object[] { });
+                configureMappingGenericMethod.Invoke(mapsToAttribute, new[] { map });
             }
 
             if (mapsToAttribute.ReverseMap)
             {
-                if (mapperConfiguration == null)
-                    Mapper.CreateMap(destinationType, sourceType);
-                else
-                    mapperConfiguration.CreateMap(destinationType, sourceType);
+                mapperConfiguration.CreateMap(destinationType, sourceType);
             }
         }
 

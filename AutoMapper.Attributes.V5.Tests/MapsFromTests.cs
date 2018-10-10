@@ -26,7 +26,7 @@ namespace AutoMapper.Attributes.Tests
                 WillNotMapTo = Grandma,
                 WillAlsoNotMapTo = Grandma
             });
-            Assert.That(destination.WillAlsoNotMapTo, Is.Null);
+            Assert.That(destination.WillAlsoNotMapTo+"1", Is.Null);
         }
 
         [Test]

@@ -31,7 +31,9 @@ namespace AutoMapper.Attributes
         public static void ThrowIfPropertyNull(PropertyInfo propertyInfo, string name)
         {
             if (propertyInfo == null)
+            {
                 throw new ArgumentOutOfRangeException(nameof(name), $"Property name {name} is not valid.");
+            }
         }
     }
 }

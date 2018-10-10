@@ -4,21 +4,23 @@
     <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
     <AssemblyName>AutoMapper.Attributes</AssemblyName>
     <RootNamespace>AutoMapper.Attributes</RootNamespace>
-	<PackageId>AutoMapper.Attributes</PackageId>
+	<PackageId>AgentFire.AutoMapper.Attributes</PackageId>
 	<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
 	<SignAssembly>false</SignAssembly>
 	<AssemblyOriginatorKeyFile>AutoMapper.Attributes.snk</AssemblyOriginatorKeyFile>
-	<Authors>Spencer Schneidenbach</Authors>
+	<Authors>AgentFire</Authors>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<Description>A convenient way to create AutoMapper type mappings using attributes.</Description>
+	<Description>Forked from (AutoMapper.Attributes) with fixes.</Description>
 	<Company />
-	<PackageProjectUrl>https://github.com/schneidenbach/AutoMapper.Attributes</PackageProjectUrl>
-	<PackageLicenseUrl>https://github.com/schneidenbach/AutoMapper.Attributes/blob/master/LICENSE</PackageLicenseUrl>
-	<RepositoryUrl>https://github.com/schneidenbach/AutoMapper.Attributes</RepositoryUrl>
-	<PackageTags>AutoMapper, AutoMapper.Attributes</PackageTags>
-	<AssemblyVersion>6.0.1.0</AssemblyVersion>
-	<FileVersion>6.0.1.0</FileVersion>
-	<Version>6.0.1</Version>
+	<PackageProjectUrl>https://github.com/AgentFire/AutoMapper.Attributes</PackageProjectUrl>
+	<PackageLicenseUrl></PackageLicenseUrl>
+	<RepositoryUrl>https://github.com/AgentFire/AutoMapper.Attributes</RepositoryUrl>
+	<PackageTags>automapper, automapper.attributes, agentfire</PackageTags>
+	<AssemblyVersion>6.0.2.0</AssemblyVersion>
+	<FileVersion>6.0.2.0</FileVersion>
+	<Version>6.0.2</Version>
+	<PackageReleaseNotes>First release - first fix - now you can use inheritance without any pain in the ass.</PackageReleaseNotes>
+	<Product>AgentFire.AutoMapper.Attributes</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.3|AnyCPU'">
@@ -27,6 +29,7 @@
   
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="5.0.2" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">

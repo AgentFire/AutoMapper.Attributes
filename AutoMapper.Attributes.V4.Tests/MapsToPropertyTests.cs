@@ -17,7 +17,7 @@ namespace AutoMapper.Attributes.Tests
             };
 
             var container = TestMapper.Mapper.Map<Container>(deep.DeeperContainer);
-            Assert.That(container.DeeperContainersName, Is.EqualTo(Grandma));
+            Assert.That(container.DeeperContainersName, Is.EqualTo(Grandma+"1"));
         }
 
         [Test]

@@ -11,7 +11,7 @@ namespace AutoMapper.Attributes.Tests
         [SetUp]
         public void Setup()
         {
-            typeof(Person).Assembly.MapTypes();
+            Mapper.Initialize(T => typeof(Person).Assembly.MapTypes(T));
         }
     }
 }
