@@ -16,9 +16,9 @@
 	<PackageLicenseUrl></PackageLicenseUrl>
 	<RepositoryUrl>https://github.com/AgentFire/AutoMapper.Attributes</RepositoryUrl>
 	<PackageTags>automapper, automapper.attributes, agentfire</PackageTags>
-	<AssemblyVersion>6.0.2.0</AssemblyVersion>
-	<FileVersion>6.0.2.0</FileVersion>
-	<Version>6.0.2</Version>
+	<AssemblyVersion>6.0.3.0</AssemblyVersion>
+	<FileVersion>6.0.3.0</FileVersion>
+	<Version>6.0.3</Version>
 	<PackageReleaseNotes>First release - first fix - now you can use inheritance without any pain in the ass.</PackageReleaseNotes>
 	<Product>AgentFire.AutoMapper.Attributes</Product>
   </PropertyGroup>
